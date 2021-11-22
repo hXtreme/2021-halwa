@@ -17,24 +17,41 @@ jobs:
       with:
         ghc-version: '8.10.7'
         cabal-version: 'latest'
+        stack-version: 'latest'
 
-    - name: Cache
+    - name: Cache ~/.stack
+      id: cache-stack
       uses: actions/cache@v1
       env:
-        cache-name: cache-cabal
+        cache-name: cache-stack
       with:
-        path: ~/.cabal
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}
+        path: ~/.stack
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.yaml') }}
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+    
+    - name: Cache .stack-work
+      id: cache-stack-work
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-stack-work
+      with:
+        path: .stack-work
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+    
+    - name: Cache ~/.local/bin
+      id: cache-stack-local-bin
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-stack-local-bin
+      with:
+        path: ~/.local/bin
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ stack-version }}
 
-    - name: Install dependencies
-      run: |
-        cabal update
-        cabal build --only-dependencies --enable-tests --enable-benchmarks
     - name: Build
-      run: cabal build --enable-tests --enable-benchmarks all
+      run: stack build
     - name: Run tests
-      run: cabal test all
+      run: stack test
