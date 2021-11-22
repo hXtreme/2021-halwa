@@ -41,15 +41,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.sha }}
           ${{ runner.os }}-build-${{ env.cache-name }}-
-    
-    - name: Cache ~/.local/bin
-      id: cache-stack-local-bin
-      uses: actions/cache@v1
-      env:
-        cache-name: cache-stack-local-bin
-      with:
-        path: ~/.local/bin
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ stack-version }}
 
     - name: Build
       run: stack build
