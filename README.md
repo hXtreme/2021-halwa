@@ -1,6 +1,8 @@
-# project-cis552
-This is the initial README file for your project. You should update it as you
-see fit.
+# Halwa
+
+[![Tests](https://github.com/hXtreme/2021-halwa/actions/workflows/haskell.yml/badge.svg)](https://github.com/hXtreme/2021-halwa/actions/workflows/haskell.yml)
+
+A basic datalog engine made in Haskell.
 
 ## Module organization
 
