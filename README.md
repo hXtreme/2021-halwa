@@ -1,5 +1,7 @@
 # Halwa
 
+[![Halwa](./logo.png)](https://github.com/hXtreme/2021-halwa)
+
 [![Tests](https://github.com/hXtreme/2021-halwa/actions/workflows/haskell.yml/badge.svg)](https://github.com/hXtreme/2021-halwa/actions/workflows/haskell.yml)
 
 A basic datalog engine made in Haskell.
