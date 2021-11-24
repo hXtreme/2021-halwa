@@ -36,19 +36,19 @@ val :: Located a -> a
 val (L _ a) = a
 
 locateAt :: Location -> a -> Located a
-locateAt l a = L (l, a)
+locateAt = L
 
 instance Functor Located where
-  fmap f l = L (loc l, f . val $ l)
+  fmap f l = L (loc l) (f . val $ l)
 
 instance Applicative Located where
-  pure a = L (Location 1 1, a)
+  pure = L (Location 1 1)
 
   {-
   Alternatively consider:
       l1 <*> l2 = L (loc l2, val l1 (val l2))
   -}
-  l1 <*> l2 = L (loc l1, val l1 (val l2))
+  l1 <*> l2 = L (loc l1) (val l1 (val l2))
 
 instance Monad Located where
   return = pure
