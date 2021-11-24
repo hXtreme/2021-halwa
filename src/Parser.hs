@@ -1,5 +1,4 @@
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE LambdaCase #-}
 
 -- CIS 552, University of Pennsylvania
 
@@ -35,28 +34,29 @@ import Control.Applicative (Alternative (..))
 import Control.Monad (guard)
 import Data.Char
 import Data.Foldable (asum)
+import Located (Located, loc, locateAt, locationAfter, val)
 import qualified System.IO as IO
 import qualified System.IO.Error as IO
 import Prelude hiding (filter)
 
 -- definition of the parser type
-newtype Parser a = P {doParse :: String -> Maybe (a, String)}
+newtype Parser a = P {doParse :: Located String -> Maybe (Located a, Located String)}
 
 instance Functor Parser where
   fmap :: (a -> b) -> Parser a -> Parser b
   fmap f p = P $ \s -> do
     (c, cs) <- doParse p s
-    return (f c, cs)
+    return (f <$> c, cs)
 
 instance Applicative Parser where
   pure :: a -> Parser a
-  pure x = P $ \s -> Just (x, s)
+  pure x = P $ \s -> Just (pure x, s)
 
   (<*>) :: Parser (a -> b) -> Parser a -> Parser b
   p1 <*> p2 = P $ \s -> do
     (f, s') <- doParse p1 s
     (x, s'') <- doParse p2 s'
-    return (f x, s'')
+    return (f <*> x, s'')
 
 instance Alternative Parser where
   empty :: Parser a
@@ -67,10 +67,10 @@ instance Alternative Parser where
 
 instance Monad Parser where
   return = pure
-  (>>=) :: Parser a -> (a -> Parser b) -> Parser b
   p >>= f = P $ \s -> do
     (x, s') <- doParse p s
-    doParse (f x) s'
+    let x' = f . val $ x
+    doParse x' s'
 
 -- | Combine two Maybe values together, producing the first
 -- successful result
@@ -80,21 +80,25 @@ firstJust Nothing y = y
 
 -- | Return the next character from the input
 get :: Parser Char
-get = P $ \case
-  (c : cs) -> Just (c, cs)
+get = P $ \s -> case val s of
+  (c : cs) -> Just (c', cs')
+    where
+      c' = locateAt (loc s) c
+      cs' = locateAt l' cs
+      l' = locationAfter c'
   [] -> Nothing
 
 -- | This parser *only* succeeds at the end of the input.
 eof :: Parser ()
-eof = P $ \case
-  [] -> Just ((), [])
+eof = P $ \s -> case val s of
+  [] -> Just (locateAt (loc s) (), s)
   _ : _ -> Nothing
 
 -- | Filter the parsing results by a predicate
 filter :: (a -> Bool) -> Parser a -> Parser a
 filter f p = P $ \s -> do
   (c, cs) <- doParse p s
-  guard (f c)
+  guard . f . val $ c
   return (c, cs)
 
 ---------------------------------------------------------------
@@ -106,15 +110,17 @@ type ParseError = String
 -- | Use a parser for a particular string. Note that this parser
 -- combinator library doesn't support descriptive parse errors, but we
 -- give it a type similar to other Parsing libraries.
-parse :: Parser a -> String -> Either ParseError a
-parse parser str = case doParse parser str of
+parse :: Parser a -> String -> Either ParseError (Located a)
+parse parser str = case doParse parser str' of
   Nothing -> Left "No parses"
   Just (a, _) -> Right a
+  where
+    str' = pure str
 
 -- | parseFromFile p filePath runs a string parser p on the input
 -- read from filePath using readFile. Returns either a
 -- ParseError (Left) or a value of type a (Right).
-parseFromFile :: Parser a -> String -> IO (Either ParseError a)
+parseFromFile :: Parser a -> String -> IO (Either ParseError (Located a))
 parseFromFile parser filename = do
   IO.catchIOError
     ( do

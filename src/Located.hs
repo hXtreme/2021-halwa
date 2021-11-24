@@ -6,11 +6,19 @@ newtype Location
   = Location (Int, Int) -- (line, column)
   deriving (Eq, Show)
 
+-- | Row number of the location.
 row :: Location -> Int
 row (Location (l, _)) = l
 
+-- | Column number of the location.
 column :: Location -> Int
 column (Location (_, c)) = c
+
+-- | The location that follows after a character.
+locationAfter :: Located Char -> Location
+locationAfter (L (l, c)) = case c of
+  '\n' -> Location (row l + 1, 1)
+  _ -> Location (row l, column l + 1)
 
 instance Ord Location where
   l1 `compare` l2 = case row l1 `compare` row l2 of
@@ -27,6 +35,9 @@ loc (L (l, _)) = l
 val :: Located a -> a
 val (L (_, a)) = a
 
+locateAt :: Location -> a -> Located a
+locateAt l a = L (l, a)
+
 instance Functor Located where
   fmap f l = L (loc l, f . val $ l)
 
@@ -40,7 +51,6 @@ instance Applicative Located where
   l1 <*> l2 = L (loc l1, val l1 (val l2))
 
 instance Monad Located where
-  return :: a -> Located a
-  return a = L (Location (1, 1), a)
+  return = pure
   (>>=) :: Located a -> (a -> Located b) -> Located b
   (L (l, a)) >>= f = f a
