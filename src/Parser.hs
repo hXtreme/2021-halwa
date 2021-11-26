@@ -35,11 +35,11 @@ import Control.Applicative (Alternative (..))
 import Control.Monad (guard)
 import Data.Char
 import Data.Foldable (asum)
+import Data.Functor
 import Located (Located, loc, locateAt, locationAfter, val)
 import qualified System.IO as IO
 import qualified System.IO.Error as IO
 import Prelude hiding (filter)
-import Data.Functor
 
 -- definition of the parser type
 newtype Parser a = P {doParse :: Located String -> Maybe (Located a, Located String)}
