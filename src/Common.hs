@@ -1,10 +1,10 @@
-module Common (Type, BinOP, UnOP) where
+module Common (Type (Symbol, Integer, Boolean, String), BinOP, UnOP) where
 
 data Type
   = Symbol
   | Integer
   | Boolean
-  | String String
+  | String
   deriving (Eq, Show)
 
 data BinOP

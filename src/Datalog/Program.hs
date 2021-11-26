@@ -1,10 +1,11 @@
-module Datalog.Program where
+module Datalog.Program (Declaration, Atom, Rule, Fact, Disjunction, Query, Program) where
 
+import Datalog.Atom (Atom)
 import Datalog.Declaration (Declaration)
-import Datalog.Rule (Rule)
-import Datalog.Fact (Fact)
 import Datalog.Disjunction (Disjunction)
+import Datalog.Fact (Fact)
 import Datalog.Query (Query)
+import Datalog.Rule (Rule)
 
 data Program = Program
   { declarations :: [Declaration],

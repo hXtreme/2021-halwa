@@ -16,6 +16,7 @@ module Parser
     alpha,
     digit,
     upper,
+    line,
     lower,
     space,
     char,
@@ -38,6 +39,7 @@ import Located (Located, loc, locateAt, locationAfter, val)
 import qualified System.IO as IO
 import qualified System.IO.Error as IO
 import Prelude hiding (filter)
+import Data.Functor
 
 -- definition of the parser type
 newtype Parser a = P {doParse :: Located String -> Maybe (Located a, Located String)}
@@ -153,6 +155,18 @@ char c = satisfy (c ==)
 -- Succeeds only if the input is the given string
 string :: String -> Parser String
 string = foldr (\c p -> (:) <$> char c <*> p) (pure "")
+
+-- | Parses and returns a single line.
+line :: Parser String
+line = some lineChars <* lineEnding
+  where
+    end = eof $> ""
+    lineChars = satisfy (not . isEndOfLine)
+    isEndOfLine = (== '\n')
+    lineEnding = (satisfy isEndOfLine $> ()) <|> eof
+
+-- >>> parse (many line) "hello\nworld"
+-- Right (L (Location 1 1) ["hello","world"])
 
 -- | succeed only if the input is a (positive or negative) integer
 int :: Parser Int
