@@ -6,7 +6,7 @@ import Datalog.Rule
 import Datalog.Fact
 import Datalog.Disjunction
 import Datalog.Query
-import Common (Type)
+import Common
 
 import Data.List
 
