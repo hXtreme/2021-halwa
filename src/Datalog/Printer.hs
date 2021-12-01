@@ -23,7 +23,7 @@ import Data.List
 main :: IO ()
 main = putStrLn "Hello, World!"
 
-printProgram :: Program -> [IO ()]
+printProgram :: Program -> IO ()
 printProgram pr = do
                     printDeclarations (declarations pr)
                     -- printRules (rules pr)
@@ -32,11 +32,11 @@ printProgram pr = do
                     -- printQueries (queries pr)
                     -- return ()
 
-printDeclarations :: [Declaration] -> [IO ()]
-printDeclarations ds = map (\x -> printDecl x) ds
+printDeclarations :: [Declaration] -> IO ()
+printDeclarations ds = sequence_ (map (\x -> printDecl x) ds)
 
 printDecl :: Declaration -> IO ()
-printDecl d = putStr (".decl" ++ (predicate d) ++ (printArgs (typeToString (argTypes d))))
+printDecl d = putStrLn (".decl " ++ (predicate d) ++ (printArgs (typeToString (argTypes d))))
 
 typeToString :: [Type] -> [String]
 typeToString ts = map (\x -> show x) ts
