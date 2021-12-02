@@ -36,10 +36,10 @@ printDeclarations :: [Declaration] -> IO ()
 printDeclarations ds = sequence_ (map (\x -> printDecl x) ds)
 
 printDecl :: Declaration -> IO ()
-printDecl d = putStrLn (".decl " ++ (predicate d) ++ (printArgs (typeToString (argTypes d))))
+printDecl d = putStrLn (".decl " ++ (predicate d) ++ (argsToString (typeToString (argTypes d))))
 
 typeToString :: [Type] -> [String]
-typeToString ts = map (\x -> show x) ts
+typeToString ts = map show ts
 
-printArgs :: [String] -> String
-printArgs s = "(" ++ (intercalate ", " s) ++ ")"
+argsToString :: [String] -> String
+argsToString s = "(" ++ (intercalate ", " s) ++ ")"
