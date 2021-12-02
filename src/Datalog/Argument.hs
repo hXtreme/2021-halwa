@@ -1,7 +1,7 @@
 module Datalog.Argument where
 
-import Datalog.Constant (Constant)
-import Datalog.Variable (Variable)
+import Datalog.Constant
+import Datalog.Variable
 import PrettyPrinter
 
 data Argument
@@ -12,5 +12,6 @@ data Argument
 
 
 instance Pretty Argument where
-    -- Change "test" as it's a temporary approach
-  prettyPrint Wildcard = "test"
+  prettyPrint (Constant c) = show c
+  prettyPrint (Datalog.Argument.Variable v) = name v
+  prettyPrint _ = "temp"
