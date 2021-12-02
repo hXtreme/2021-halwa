@@ -1,7 +1,7 @@
 module Datalog.Literal where
 
-import Datalog.Atom (Atom)
-import Datalog.Constraint (Constraint)
+import Datalog.Atom
+import Datalog.Constraint
 import PrettyPrinter
 
 data Literal
@@ -12,4 +12,6 @@ data Literal
 
 instance Pretty Literal where
       -- Change "test" as it's a temporary approach
-  prettyPrint l = "test"  
+  prettyPrint (Pos a) = (predicate a) ++ "(" ++ (prettyPrint (CommaSeparatedList (args a))) ++ ")"
+  prettyPrint (Neg a) = (predicate a) ++ "(" ++ (prettyPrint (CommaSeparatedList (args a))) ++ ")"
+  prettyPrint (Constraint c) = "temp"

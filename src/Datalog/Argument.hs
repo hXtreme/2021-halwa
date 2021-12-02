@@ -13,4 +13,4 @@ data Argument
 
 instance Pretty Argument where
     -- Change "test" as it's a temporary approach
-  prettyPrint d = "test"
+  prettyPrint Wildcard = "test"
