@@ -11,7 +11,7 @@ data Literal
   deriving (Eq, Show)
 
 instance Pretty Literal where
-      -- Change "test" as it's a temporary approach
+      -- Change "temp" as it's a temporary approach
   prettyPrint (Pos a) = (predicate a) ++ "(" ++ (prettyPrint (CommaSeparatedList (args a))) ++ ")"
   prettyPrint (Neg a) = (predicate a) ++ "(" ++ (prettyPrint (CommaSeparatedList (args a))) ++ ")"
-  prettyPrint (Constraint c) = "temp"
+  prettyPrint (Constraint c) = prettyPrint c
