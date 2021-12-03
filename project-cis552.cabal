@@ -25,8 +25,32 @@ source-repository head
 
 library
   exposed-modules:
+      Common
+      Datalog.Argument
+      Datalog.Atom
+      Datalog.Constant
+      Datalog.Constraint
+      Datalog.Declaration
+      Datalog.Disjunction
+      Datalog.Fact
+      Datalog.Literal
+      Datalog.Printer
+      Datalog.Program
+      Datalog.Query
+      Datalog.Rule
+      Datalog.Variable
       Lib
+      Located
       Parser
+      PrettyPrinter
+      RAM
+      RAM.Constant
+      RAM.Disjunction
+      RAM.Fact
+      RAM.Flow
+      RAM.Program
+      RAM.Update
+      RAM.Variable
   other-modules:
       Paths_project_cis552
   hs-source-dirs:

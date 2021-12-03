@@ -1,11 +1,16 @@
-module Common (Type, BinOP, UnOP) where
+module Common (Type (Symbol, Integer, Boolean, String), BinOP, UnOP) where
+
+import PrettyPrinter
 
 data Type
   = Symbol
   | Integer
   | Boolean
-  | String String
+  | String
   deriving (Eq, Show)
+
+instance Pretty Type where
+  prettyPrint = show
 
 data BinOP
   = Eq
