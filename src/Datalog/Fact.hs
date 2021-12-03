@@ -7,4 +7,4 @@ import Datalog.Argument
 newtype Fact = Fact {head :: Atom} deriving (Eq, Show)
 
 instance Pretty Fact where
-  prettyPrint f = (predicate (Datalog.Fact.head f)) ++ "(" ++ (prettyPrint (CommaSeparatedList (args (Datalog.Fact.head f)))) ++ ")"
+  prettyPrint f = prettyPrint $ Datalog.Fact.head f
