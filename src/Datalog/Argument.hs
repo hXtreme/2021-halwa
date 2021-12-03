@@ -12,6 +12,6 @@ data Argument
 
 
 instance Pretty Argument where
-  prettyPrint (Constant c) = show c
+  prettyPrint (Constant c) = prettyPrint c
   prettyPrint (Datalog.Argument.Variable v) = name v
   prettyPrint _ = "_"
