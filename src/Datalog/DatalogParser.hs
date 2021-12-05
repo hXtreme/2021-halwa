@@ -4,10 +4,13 @@ import qualified Common as C
 import Control.Applicative
 import Data.Functor
 import qualified Datalog.Atom as DL.Atom
+import qualified Datalog.Argument as DL.Argument
+import qualified Datalog.Common as DL.Common
 import qualified Datalog.Declaration as DL.Declaration
 import qualified Datalog.Program as DL.Program
 import Parser (Parser, parse)
 import qualified Parser as P
+import Parseable (parser)
 
 data Item
   = Empty
@@ -58,15 +61,6 @@ atomP = DL.Atom.Atom <$> lowerCaseName <*> argsP
   where
     name = lowerCaseName
     argsP = P.parensP $ P.sepBy argumentP P.commaP
-
-wildcardP :: Parser DL.Argument.Argument
-wildcardP = P.constP "_" DL.Argument.Wildcard
-
-constantP :: Parser DL.Argument.Argument
-constantP = DL.Argument.Constant <$> undefined
-
-argumentP :: Parser DL.Argument.Argument
-argumentP = wildcardP <|> constantP <|> variableP
 
 commentP :: Parser Item
 commentP = Comment <$> (P.stringP "//" *> P.wsP P.line)
