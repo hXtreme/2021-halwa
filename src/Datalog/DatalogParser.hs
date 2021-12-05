@@ -56,12 +56,6 @@ lowerCaseName = P.filter DL.Common.isNotKeyWord . P.wsP $ P.snakeCaseWord
 initialUpperCaseName :: Parser String
 initialUpperCaseName = P.filter DL.Common.isNotKeyWord $ P.wsP P.titleCaseWord
 
-atomP :: Parser DL.Program.Atom
-atomP = DL.Atom.Atom <$> lowerCaseName <*> argsP
-  where
-    name = lowerCaseName
-    argsP = P.parensP $ P.sepBy argumentP P.commaP
-
 commentP :: Parser Item
 commentP = Comment <$> (P.stringP "//" *> P.wsP P.line)
 
@@ -77,9 +71,4 @@ commentP = Comment <$> (P.stringP "//" *> P.wsP P.line)
 -- >>> parse declarationP "decl foo (Symbol, Int, Int)"
 -- Right (L (Location 1 1) (Declaration {predicate = "foo", argTypes = [Symbol,Integer,Integer]}))
 
--- | Parse a declaration statement.
-declarationP :: Parser DL.Program.Declaration
-declarationP = DL.Declaration.Declaration <$> (keyWordDecl *> name) <*> argTypes
   where
-    name = lowerCaseName
-    argTypes = parens (P.sepBy typeP commaP) <|> pure []
