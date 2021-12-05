@@ -18,57 +18,20 @@ data Item
   | Query DL.Program.Query
   deriving (Eq, Show)
 
-wsP :: Parser a -> Parser a
-wsP p = p <* many P.space
-
-constP :: String -> a -> Parser a
-constP s x = (wsP . P.string) s $> x
-
 -- >>> parse (many (constP "foo" "bar")) "foo  boo foo"
 -- Right (L (Location 1 1) ["bar"])
 
-stringP :: String -> Parser ()
-stringP s = constP s ()
-
-commaP :: Parser ()
-commaP = stringP ","
-
-parens :: Parser a -> Parser a
-parens x = P.between (stringP "(") x (stringP ")")
-
-reserved :: [String]
-reserved =
-  [ "decl",
-    "query",
-    "Symbol",
-    "Int",
-    "Bool",
-    "String",
-    "true",
-    "false"
-  ]
-
-isReserved :: String -> Bool
-isReserved = (`elem` reserved)
-
 keyWordDecl :: Parser ()
-keyWordDecl = stringP "decl"
+keyWordDecl = P.stringP "decl"
 
 keyWordQuery :: Parser ()
-keyWordQuery = stringP "query"
+keyWordQuery = P.stringP "query"
 
 keyWordTrue :: Parser Bool
-keyWordTrue = constP "true" True
+keyWordTrue = P.constP "true" True
 
 keyWordFalse :: Parser Bool
-keyWordFalse = constP "false" False
-
-typeP :: Parser C.Type
-typeP =
-  constP "Symbol" C.Symbol
-    <|> constP "Int" C.Integer
-    <|> constP "Bool" C.Boolean
-    <|> constP "String" C.String
+keyWordFalse = P.constP "false" False
 
 -- >>> parse (lowerCaseName) "foo(bar)"
 -- Right (L (Location 1 1) "foo")
@@ -78,9 +41,7 @@ typeP =
 
 -- | Parse a lower-case name. regex: [a-z][a-zA-Z0-9_]*
 lowerCaseName :: Parser String
-lowerCaseName = P.filter notReserved $ wsP $ (:) <$> P.lower <*> many (P.lower <|> P.digit <|> P.char '_')
-  where
-    notReserved = not . isReserved
+lowerCaseName = P.filter DL.Common.isNotKeyWord . P.wsP $ P.snakeCaseWord
 
 -- >>> parse (initialUpperCaseName) "foo(bar)"
 -- Left "No parses"
@@ -90,12 +51,25 @@ lowerCaseName = P.filter notReserved $ wsP $ (:) <$> P.lower <*> many (P.lower <
 
 -- | Parse a name that starts with an uppercase letter. regex: [a-z][a-zA-Z0-9_]*
 initialUpperCaseName :: Parser String
-initialUpperCaseName = P.filter notReserved $ wsP $ (:) <$> P.upper <*> many (P.alpha <|> P.digit <|> P.char '_')
+initialUpperCaseName = P.filter DL.Common.isNotKeyWord $ P.wsP P.titleCaseWord
+
+atomP :: Parser DL.Program.Atom
+atomP = DL.Atom.Atom <$> lowerCaseName <*> argsP
   where
-    notReserved = not . isReserved
+    name = lowerCaseName
+    argsP = P.parensP $ P.sepBy argumentP P.commaP
+
+wildcardP :: Parser DL.Argument.Argument
+wildcardP = P.constP "_" DL.Argument.Wildcard
+
+constantP :: Parser DL.Argument.Argument
+constantP = DL.Argument.Constant <$> undefined
+
+argumentP :: Parser DL.Argument.Argument
+argumentP = wildcardP <|> constantP <|> variableP
 
 commentP :: Parser Item
-commentP = Comment <$> (stringP "//" *> wsP P.line)
+commentP = Comment <$> (P.stringP "//" *> P.wsP P.line)
 
 -- >>> parse declarationP "decl foo"
 -- Right (L (Location 1 1) (Declaration {predicate = "foo", argTypes = []}))

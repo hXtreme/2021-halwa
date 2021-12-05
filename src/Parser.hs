@@ -21,6 +21,9 @@ module Parser
     space,
     char,
     string,
+    word,
+    snakeCaseWord,
+    titleCaseWord,
     int,
     chainl1,
     chainl,
@@ -28,6 +31,11 @@ module Parser
     between,
     sepBy1,
     sepBy,
+    wsP,
+    constP,
+    stringP,
+    commaP,
+    parensP,
   )
 where
 
@@ -156,6 +164,18 @@ char c = satisfy (c ==)
 string :: String -> Parser String
 string = foldr (\c p -> (:) <$> char c <*> p) (pure "")
 
+-- | Parses and returns a word.
+word :: Parser String
+word = many (alpha <|> digit <|> char '_')
+
+-- | Parses and returns a snake case word.
+snakeCaseWord :: Parser String
+snakeCaseWord = many (lower <|> digit <|> char '_')
+
+-- | Parses and returns a titlecase word.
+titleCaseWord :: Parser String
+titleCaseWord = (:) <$> upper <*> word
+
 -- | Parses and returns a single line.
 line :: Parser String
 line = some lineChars <* lineEnding
@@ -207,3 +227,23 @@ sepBy1 :: Parser a -> Parser sep -> Parser [a]
 sepBy1 p sep = (:) <$> p <*> many (sep *> p)
 
 ---------------------------------------------
+
+-- | Parse p and discard following spaces
+wsP :: Parser a -> Parser a
+wsP p = p <* many space
+
+-- | Parse a constant value
+constP :: String -> a -> Parser a
+constP s x = (wsP . string) s $> x
+
+-- | Parse a constant string
+stringP :: String -> Parser ()
+stringP s = constP s ()
+
+-- | Parse a comma
+commaP :: Parser ()
+commaP = stringP ","
+
+-- | Parse ( p )
+parensP :: Parser a -> Parser a
+parensP x = between (stringP "(") x (stringP ")")
