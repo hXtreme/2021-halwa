@@ -16,4 +16,4 @@ instance Parseable Atom where
   parser = Atom <$> predicate <*> args
     where
       predicate = P.filter DL.Common.isNotKeyWord $ P.wsP P.snakeCaseWord
-      args = many parser
+      args = P.parensP (P.sepBy parser P.commaP) <|> pure []
