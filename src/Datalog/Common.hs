@@ -1,5 +1,8 @@
 module Datalog.Common where
 
+end :: String
+end = "."
+
 keyWords :: [String]
 keyWords =
   [ "decl",

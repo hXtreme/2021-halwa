@@ -52,5 +52,4 @@ instance Applicative Located where
 
 instance Monad Located where
   return = pure
-  (>>=) :: Located a -> (a -> Located b) -> Located b
   L l a >>= f = f a
