@@ -35,6 +35,8 @@ module Parser
     constP,
     stringP,
     commaP,
+    semicolonP,
+    colonP,
     parensP,
   )
 where
@@ -243,6 +245,14 @@ stringP s = constP s ()
 -- | Parse a comma
 commaP :: Parser ()
 commaP = stringP ","
+
+-- | Parse a semicolon
+semicolonP :: Parser ()
+semicolonP = stringP ";"
+
+-- | Parse a colon
+colonP :: Parser ()
+colonP = stringP ":"
 
 -- | Parse ( p )
 parensP :: Parser a -> Parser a
