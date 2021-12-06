@@ -1,4 +1,8 @@
-module Datalog.Argument where
+module Datalog.Argument(
+  Argument(..),
+  Constant,
+  Variable,
+) where
 
 import Control.Applicative
 import Datalog.Constant (Constant)
