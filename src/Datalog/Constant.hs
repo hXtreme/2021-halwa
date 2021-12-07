@@ -4,6 +4,7 @@ import Control.Applicative
 import Parseable (Parseable (parser))
 import Parser
 import qualified Parser as P
+import Pretty (Pretty (pretty))
 
 data Constant
   = Symbol String
@@ -20,3 +21,8 @@ instance Parseable Constant where
       dQuote = P.satisfy (== '"')
       notDQuote = P.satisfy (/= '"')
       quotedString = P.between dQuote (many notDQuote) dQuote
+
+instance Pretty Constant where
+  pretty (Symbol s) = s
+  pretty (Boolean b) = show b
+  pretty (Integer i) = show i
