@@ -10,6 +10,7 @@ import Datalog.Variable (Variable)
 import Parseable (Parseable, parser)
 import Parser
 import qualified Parser as P
+import Pretty (Pretty (pretty))
 
 data Argument
   = Wildcard
@@ -23,3 +24,9 @@ instance Parseable Argument where
       wildcardP = P.constP "_" Wildcard
       constantP = Constant <$> parser
       variableP = Variable <$> parser
+
+instance Pretty Argument where
+  pretty arg = case arg of
+    Wildcard -> "_"
+    Constant c -> pretty c
+    Variable v -> pretty v
