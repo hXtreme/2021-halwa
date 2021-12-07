@@ -6,6 +6,32 @@
 
 A basic datalog engine made in Haskell.
 
+## What is Datalog?
+
+Datalog is a declarative programming language that allows users to write logic programs.
+
+For example:
+
+```
+// Are two locations connected?
+
+decl path(Symbol, Symbol).
+decl edge(Symbol, Symbol).
+
+path(A, B) :- edge(A, B).
+path(A, C) :- path(B, C), edge(A, B).
+
+edge("Towne", "Levine").
+edge("Levine", "Moore").
+
+query path.
+
+// Result:
+// path("Towne", "Levine").
+// path("Levine", "Moore").
+// path("Towne", "Moore").
+```
+
 ## Module organization
 
 Haskell packages typically divide their source code into three separate places:
