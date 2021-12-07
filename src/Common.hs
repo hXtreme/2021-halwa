@@ -8,6 +8,7 @@ where
 import Control.Applicative
 import Parseable (Parseable, parser)
 import qualified Parser as P
+import Pretty (Pretty (pretty))
 
 data Type
   = Symbol
@@ -22,6 +23,9 @@ instance Parseable Type where
       <|> P.constP "Int" Integer
       <|> P.constP "Bool" Boolean
       <|> P.constP "String" String
+
+instance Pretty Type where
+  pretty = show
 
 data BinOP
   = Eq
@@ -53,6 +57,21 @@ instance Parseable BinOP where
       <|> P.constP "*" Mult
       <|> P.constP "/" Div
 
+instance Pretty BinOP where
+  pretty op = case op of
+    Eq -> "="
+    Ne -> "!="
+    Leq -> "<="
+    Lt -> "<"
+    Geq -> ">="
+    Gt -> ">"
+    And -> "&&"
+    Or -> "||"
+    Add -> "+"
+    Sub -> "-"
+    Mult -> "*"
+    Div -> "/"
+
 data UnOP
   = Not
   | Pos
@@ -64,3 +83,9 @@ instance Parseable UnOP where
     P.constP "!" Not
       <|> P.constP "+" Pos
       <|> P.constP "-" Neg
+
+instance Pretty UnOP where
+  pretty op = case op of
+    Not -> "!"
+    Pos -> "+"
+    Neg -> "-"
