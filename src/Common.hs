@@ -81,11 +81,11 @@ data UnOP
 instance Parseable UnOP where
   parser =
     P.constP "!" Not
-      <|> P.constP "+" Pos
       <|> P.constP "-" Neg
+      <|> P.constP "" Pos
 
 instance Pretty UnOP where
   pretty op = case op of
     Not -> "!"
-    Pos -> "+"
+    Pos -> ""
     Neg -> "-"
