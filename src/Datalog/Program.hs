@@ -5,6 +5,7 @@ module Datalog.Program
 where
 
 import Control.Applicative
+import Data.List (intercalate)
 import Data.Maybe (mapMaybe)
 import Datalog.Atom (Atom)
 import qualified Datalog.Common as DL.Common
@@ -16,6 +17,7 @@ import Datalog.Rule (Rule)
 import Parseable (Parseable (parser))
 import Parser (Parser)
 import qualified Parser as P
+import Pretty (NewLineSeparatedList (NSL), Pretty (pretty))
 
 data Program = Program
   { declarations :: [Declaration],
@@ -35,6 +37,20 @@ instance Parseable Program where
     let disjs = disjunctionFilter items
     let queries = queriesFilter items
     return $ Program decls rules facts disjs queries
+
+instance Pretty Program where
+  pretty (Program decls rules facts disjs queries) =
+    intercalate
+      "\n\n"
+      [ fmt decls,
+        fmt facts,
+        fmt rules,
+        fmt disjs,
+        fmt queries
+      ]
+    where
+      terminated x = pretty x <> DL.Common.end
+      fmt its = pretty . NSL $ map terminated its
 
 -- >>> P.parse ((parser :: Parser Program)) "p(X, Y) :- q(X, Y), r(X)."
 -- Right (L (Location 1 1) (Program {declarations = [], rules = [Rule {head = Atom {predicate = "p", args = [Variable (Variable {name = "X"}),Variable (Variable {name = "Y"})]}, body = [Pos (Atom {predicate = "q", args = [Variable (Variable {name = "X"}),Variable (Variable {name = "Y"})]}),Pos (Atom {predicate = "r", args = [Variable (Variable {name = "X"})]})]}], facts = [], disjunction = [], queries = []}))
