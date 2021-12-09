@@ -44,10 +44,6 @@ instance Functor Located where
 instance Applicative Located where
   pure = L (Location 1 1)
 
-  {-
-  Alternatively consider:
-      l1 <*> l2 = L (loc l2, val l1 (val l2))
-  -}
   l1 <*> l2 = L (loc l1) (val l1 (val l2))
 
 instance Monad Located where
