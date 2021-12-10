@@ -25,7 +25,10 @@ instance Parseable Type where
       <|> P.constP "String" String
 
 instance Pretty Type where
-  pretty = show
+  pretty t = case t of
+    Integer -> "Int"
+    Boolean -> "Bool"
+    _ -> show t
 
 data BinOP
   = Eq
