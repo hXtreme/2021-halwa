@@ -1,6 +1,7 @@
 module Located where
 
 import Control.Monad.Cont (Monad)
+import Pretty (Pretty (pretty))
 
 data Location
   = Location Int Int -- (line, column)
@@ -20,6 +21,9 @@ locationAfter (L l c) = case c of
   '\n' -> Location (row l + 1) 1
   _ -> Location (row l) (column l + 1)
 
+instance Pretty Location where
+  pretty (Location l c) = "Line=" ++ show l ++ ", Col=" ++ show c
+
 instance Ord Location where
   l1 `compare` l2 = case row l1 `compare` row l2 of
     EQ -> column l1 `compare` column l2
@@ -37,6 +41,9 @@ val (L _ a) = a
 
 locateAt :: Location -> a -> Located a
 locateAt = L
+
+instance Pretty a => Pretty (Located a) where
+  pretty (L l a) = pretty l ++ ":\t" ++ pretty a
 
 instance Functor Located where
   fmap f l = L (loc l) (f . val $ l)
