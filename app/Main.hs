@@ -9,7 +9,7 @@ loadFile :: FilePath -> IO DL.Program
 loadFile fileName = do
   parsed <- parseFromFile fileName
   case parsed of
-    Left err -> error $ show err
+    Left err -> error $ pretty err
     Right prog -> return prog
 
 cli :: String -> IO ()
