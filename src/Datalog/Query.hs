@@ -5,7 +5,7 @@ import Parseable (Parseable (parser))
 import qualified Parser as P
 import Pretty (Pretty (pretty))
 
-newtype Query = Query {query :: Atom} deriving (Eq, Show)
+newtype Query = Query {query :: Atom} deriving (Eq, Show, Ord)
 
 instance Parseable Query where
   parser = Query <$> (keyWordQuery *> relation)

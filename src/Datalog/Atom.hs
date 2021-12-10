@@ -11,7 +11,7 @@ data Atom = Atom
   { predicate :: String,
     args :: [Argument]
   }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Atom where
   parser = Atom <$> predicate <*> args

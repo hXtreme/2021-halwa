@@ -11,7 +11,7 @@ data Declaration = Declaration
   { predicate :: String,
     argTypes :: [Type]
   }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Declaration where
   parser = Declaration <$> (keyWordDecl *> name) <*> argTypes

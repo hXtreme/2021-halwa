@@ -26,7 +26,7 @@ data Program = Program
     disjunction :: [Disjunction],
     queries :: [Query]
   }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Program where
   parser = do

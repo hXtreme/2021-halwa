@@ -6,7 +6,7 @@ import qualified Parser as P
 import Pretty (Pretty (pretty))
 
 newtype Variable = Variable {name :: String}
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Variable where
   parser = Variable <$> titleCaseName

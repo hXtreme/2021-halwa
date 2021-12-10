@@ -15,7 +15,7 @@ data Type
   | Integer
   | Boolean
   | String
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Type where
   parser =
@@ -33,17 +33,17 @@ instance Pretty Type where
 data BinOP
   = Eq
   | Ne
-  | Lt
   | Leq
-  | Gt
+  | Lt
   | Geq
+  | Gt
   | And
   | Or
   | Add
   | Sub
   | Mult
   | Div
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable BinOP where
   parser =
@@ -79,7 +79,7 @@ data UnOP
   = Not
   | Pos
   | Neg
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable UnOP where
   parser =

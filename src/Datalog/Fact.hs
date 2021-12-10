@@ -4,7 +4,7 @@ import Datalog.Atom (Atom)
 import Parseable (Parseable (parser))
 import Pretty (Pretty (pretty))
 
-newtype Fact = Fact {head :: Atom} deriving (Eq, Show)
+newtype Fact = Fact {head :: Atom} deriving (Eq, Show, Ord)
 
 instance Parseable Fact where
   parser = Fact <$> parser

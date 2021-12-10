@@ -1,8 +1,9 @@
-module Datalog.Argument(
-  Argument(..),
-  Constant,
-  Variable,
-) where
+module Datalog.Argument
+  ( Argument (..),
+    Constant,
+    Variable,
+  )
+where
 
 import Control.Applicative
 import Datalog.Constant (Constant)
@@ -16,7 +17,7 @@ data Argument
   = Wildcard
   | Constant Constant
   | Variable Variable
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Argument where
   parser = wildcardP <|> constantP <|> variableP
