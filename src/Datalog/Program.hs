@@ -42,15 +42,18 @@ instance Pretty Program where
   pretty (Program decls rules facts disjs queries) =
     intercalate
       "\n\n"
-      [ fmt decls,
-        fmt facts,
-        fmt rules,
-        fmt disjs,
-        fmt queries
-      ]
+      nonEmptyItems
     where
       terminated x = pretty x <> DL.Common.end
       fmt its = pretty . NSL $ map terminated its
+      items =
+        [ fmt decls,
+          fmt facts,
+          fmt rules,
+          fmt disjs,
+          fmt queries
+        ]
+      nonEmptyItems = filter (/= "") items
 
 -- >>> P.parse ((parser :: Parser Program)) "p(X, Y) :- q(X, Y), r(X)."
 -- Right (L (Location 1 1) (Program {declarations = [], rules = [Rule {head = Atom {predicate = "p", args = [Variable (Variable {name = "X"}),Variable (Variable {name = "Y"})]}, body = [Pos (Atom {predicate = "q", args = [Variable (Variable {name = "X"}),Variable (Variable {name = "Y"})]}),Pos (Atom {predicate = "r", args = [Variable (Variable {name = "X"})]})]}], facts = [], disjunction = [], queries = []}))
