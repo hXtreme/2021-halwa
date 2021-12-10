@@ -1,6 +1,6 @@
 module Datalog.Query where
 
-import Datalog.Atom (Atom (args))
+import Datalog.Atom (Atom (args, predicate))
 import Parseable (Parseable (parser))
 import qualified Parser as P
 import Pretty (Pretty (pretty))
@@ -14,4 +14,4 @@ instance Parseable Query where
       keyWordQuery = P.stringP "query"
 
 instance Pretty Query where
-  pretty (Query atom) = "query " ++ pretty atom
+  pretty (Query atom) = "query " ++ predicate atom
