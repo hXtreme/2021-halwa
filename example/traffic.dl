@@ -1,0 +1,24 @@
+// Simple program to see if an intersection is unsafe to cross.
+
+decl road(Symbol).
+decl intersection(Symbol, Symbol).
+decl traffic(Symbol).
+decl unsafe(Symbol, Symbol).
+
+unsafe(X) :- intersection(X, Y), road(Y), traffic(Y).
+
+road("A").
+road("B").
+road("C").
+road("D").
+
+intersection("A", "B").
+intersection("B", "C").
+intersection("B", "D").
+intersection("C", "D").
+
+traffic("A").
+traffic("C").
+traffic("D").
+
+query unsafe.
