@@ -11,7 +11,7 @@ data Literal
   = Pos Atom
   | Neg Atom
   | Constraint Constraint
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Literal where
   parser = negP <|> posP <|> constraintP

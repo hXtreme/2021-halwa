@@ -10,7 +10,7 @@ data Rule = Rule
   { head :: Atom,
     body :: [Literal]
   }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Rule where
   parser = Rule <$> parser <*> (P.stringP ":-" *> bodyP)

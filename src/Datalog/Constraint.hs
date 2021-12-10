@@ -9,7 +9,7 @@ import Pretty (Pretty (pretty))
 data Constraint
   = BinaryConstraint Argument BinOP Argument
   | UnaryConstraint UnOP Argument
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Constraint where
   parser =

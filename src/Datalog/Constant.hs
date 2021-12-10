@@ -10,7 +10,7 @@ data Constant
   = Symbol String
   | Boolean Bool
   | Integer Int -- Maybe add | SymbolId Int
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 instance Parseable Constant where
   parser = symbolP <|> booleanP <|> integerP

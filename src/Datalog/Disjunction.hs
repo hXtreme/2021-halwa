@@ -7,7 +7,7 @@ import Parseable (Parseable (parser))
 import qualified Parser as P
 import Pretty (Pretty (pretty))
 
-newtype Disjunction = Disjunction {facts :: [Fact]} deriving (Eq, Show)
+newtype Disjunction = Disjunction {facts :: [Fact]} deriving (Eq, Show, Ord)
 
 instance Parseable Disjunction where
   parser = Disjunction <$> fewFacts
