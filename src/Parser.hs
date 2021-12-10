@@ -46,13 +46,13 @@ import Control.Monad (guard)
 import Data.Char
 import Data.Foldable (asum)
 import Data.Functor
-import Located (Located, loc, locateAt, locationAfter, val)
+import Located (Located, loc, locateAt, locationAfter, val, Location (Location))
 import qualified System.IO as IO
 import qualified System.IO.Error as IO
 import Prelude hiding (filter)
 
 -- definition of the parser type
-newtype Parser a = P {doParse :: Located String -> Maybe (Located a, Located String)}
+newtype Parser a = P {doParse :: Located String -> Either ParseError (Located a, Located String)}
 
 instance Functor Parser where
   fmap :: (a -> b) -> Parser a -> Parser b
@@ -62,7 +62,7 @@ instance Functor Parser where
 
 instance Applicative Parser where
   pure :: a -> Parser a
-  pure x = P $ \s -> Just (pure x, s)
+  pure x = P $ \s -> Right (pure x, s)
 
   (<*>) :: Parser (a -> b) -> Parser a -> Parser b
   p1 <*> p2 = P $ \s -> do
@@ -72,7 +72,7 @@ instance Applicative Parser where
 
 instance Alternative Parser where
   empty :: Parser a
-  empty = P $ const Nothing
+  empty = P $ \s -> Left (locateAt (loc s) "Empty Parser matches nothing.")
 
   (<|>) :: Parser a -> Parser a -> Parser a
   p1 <|> p2 = P $ \s -> doParse p1 s `firstJust` doParse p2 s
@@ -86,46 +86,48 @@ instance Monad Parser where
 
 -- | Combine two Maybe values together, producing the first
 -- successful result
-firstJust :: Maybe a -> Maybe a -> Maybe a
-firstJust (Just x) _ = Just x
-firstJust Nothing y = y
+firstJust :: Either ParseError a -> Either ParseError a -> Either ParseError a
+firstJust (Right x) _ = Right x
+firstJust (Left _) y = y
 
 -- | Return the next character from the input
 get :: Parser Char
 get = P $ \s -> case val s of
-  (c : cs) -> Just (c', cs')
+  (c : cs) -> Right (c', cs')
     where
       c' = locateAt (loc s) c
       cs' = locateAt l' cs
       l' = locationAfter c'
-  [] -> Nothing
+  [] -> Left (locateAt (loc s) "Unexpected end of file.")
 
 -- | This parser *only* succeeds at the end of the input.
 eof :: Parser ()
 eof = P $ \s -> case val s of
-  [] -> Just (locateAt (loc s) (), s)
-  _ : _ -> Nothing
+  [] -> Right (locateAt (loc s) (), s)
+  _ : _ -> Left (locateAt (loc s) "Expected the end of file.")
 
 -- | Filter the parsing results by a predicate
 filter :: (a -> Bool) -> Parser a -> Parser a
 filter f p = P $ \s -> do
   (c, cs) <- doParse p s
-  guard . f . val $ c
-  return (c, cs)
+  if f . val $ c
+    then return (c, cs)
+    else Left (locateAt (loc c) "Filter failed.")
 
 ---------------------------------------------------------------
 ---------------------------------------------------------------
 ---------------------------------------------------------------
 
-type ParseError = String
+type ParseError = Located String
+type ParseResult a = Either ParseError (Located a)
 
 -- | Use a parser for a particular string. Note that this parser
 -- combinator library doesn't support descriptive parse errors, but we
 -- give it a type similar to other Parsing libraries.
 parse :: Parser a -> String -> Either ParseError (Located a)
 parse parser str = case doParse parser str' of
-  Nothing -> Left "No parses"
-  Just (a, _) -> Right a
+  Left err -> Left err
+  Right (a, _) -> Right a
   where
     str' = pure str
 
@@ -140,8 +142,7 @@ parseFromFile parser filename = do
         str <- IO.hGetContents handle
         pure $ parse parser str
     )
-    ( \e ->
-        pure $ Left $ "Error:" ++ show e
+    ( pure . Left . locateAt (Location 0 0) . show
     )
 
 -- | Return the next character if it satisfies the given predicate

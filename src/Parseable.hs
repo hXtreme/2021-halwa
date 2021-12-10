@@ -2,7 +2,7 @@ module Parseable (Parseable, parser, parseFromFile) where
 
 import Control.Applicative
 import Data.Either (Either)
-import Located (Located (L))
+import Located (Located (L), locateAt, Location (Location))
 import Parser (ParseError, Parser)
 import qualified Parser as P
 import qualified System.IO as IO
@@ -19,7 +19,7 @@ class Parseable a where
           return $ parsedItem (P.parse parser str)
       )
       ( \e ->
-          return $ Left $ "Error: " ++ show e
+          return $ Left . locateAt (Location 0 0) $ "Error: " ++ show e
       )
     where
       parsedItem (Left e) = Left e
