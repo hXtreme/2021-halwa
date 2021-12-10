@@ -2,7 +2,7 @@
 A Module for a Relational Algebra Machine Program.
 -}
 
-module RAM.Program (Program) where
+module RAM.Program (Program (..)) where
 
 import RAM.Disjunction (Disjunction)
 import RAM.Fact (Fact)

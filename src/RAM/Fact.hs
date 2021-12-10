@@ -2,7 +2,7 @@
 A Module for a Relational Algebra Machine's Fact type.
 -}
 
-module RAM.Fact (Fact) where
+module RAM.Fact (Fact (..)) where
 
 import RAM.Constant (Constant)
 
