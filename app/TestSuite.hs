@@ -6,6 +6,7 @@ import Pretty (pretty)
 import System.Environment (getArgs)
 import Datalog.Declaration
 import Datalog.Atom
+import Datalog.Variable
 import Datalog.Constant
 import Datalog.Argument
 import Datalog.Fact
@@ -35,13 +36,13 @@ pathTest =
     putStrLn "Loaded path program and created its AST. Now comparing it to expected AST."
     let d1 = Declaration {Datalog.Declaration.predicate="path", Datalog.Declaration.argTypes=[Common.Symbol, Common.Symbol]}
         d2 = Declaration {Datalog.Declaration.predicate="edge", Datalog.Declaration.argTypes=[Common.Symbol, Common.Symbol]}        
-        const1 = Datalog.Constant.Symbol "A"
-        const2 = Datalog.Constant.Symbol "B"
-        const7 = Datalog.Constant.Symbol "C"
-        a1 = Atom {Datalog.Atom.predicate="path", args=[Constant const1, Constant const2]}
-        a4 = Atom {Datalog.Atom.predicate="path", args=[Constant const1, Constant const7]}
-        a5 = Atom {Datalog.Atom.predicate="edge", args=[Constant const1, Constant const2]}
-        a6 = Atom {Datalog.Atom.predicate="path", args=[Constant const2, Constant const7]}
+        var1 = Datalog.Variable.Variable {name="A"}
+        var2 = Datalog.Variable.Variable {name="B"}
+        var7 = Datalog.Variable.Variable {name="C"}
+        a1 = Atom {Datalog.Atom.predicate="path", args=[Datalog.Argument.Variable var1, Datalog.Argument.Variable var2]}
+        a4 = Atom {Datalog.Atom.predicate="path", args=[Datalog.Argument.Variable var1, Datalog.Argument.Variable var7]}
+        a5 = Atom {Datalog.Atom.predicate="edge", args=[Datalog.Argument.Variable var1, Datalog.Argument.Variable var2]}
+        a6 = Atom {Datalog.Atom.predicate="path", args=[Datalog.Argument.Variable var2, Datalog.Argument.Variable var7]}
         lit1 = Datalog.Literal.Pos a5
         lit2 = Datalog.Literal.Pos a6
         rule1 = Rule {Datalog.Rule.head=a1, body=[lit1]}
@@ -56,17 +57,9 @@ pathTest =
         fact2 = Fact {Datalog.Fact.head=a3}
         a7 = Atom {Datalog.Atom.predicate="path", args=[]}
         query1 = Query {Datalog.Query.query=a7}
-        -- lit1 = Pos a1
-        -- rule1 = DL.Rule {Datalog.Rule.head=a1, body=[lit1, lit1]}
-        -- query1 = DL.Query {DL.Query.query=a1}
-        -- declarations = [d1, d2]
-        -- rules = [rule1, rule1]
-        -- facts = [fact1, fact1, fact1]
-        -- queries = [query1, query1]
-        -- disjunctions = []
-        -- program1 = DL.Program {DL.declarations=declarations, DL.rules=rules, DL.facts=facts, DL.queries=queries, DL.disjunction=disjunctions}
         program1 = DL.Program {DL.declarations=[d1, d2], DL.rules=[rule1, rule2], DL.facts=[fact1, fact2], DL.disjunction=[], DL.queries=[query1]}        
-        in putStrLn $ pretty program1     
+        -- in putStrLn $ show (DL.facts program1)
+        in putStrLn $ show (program1 == ast)
     -- putStrLn $ pretty ast
 
 main :: IO ()
