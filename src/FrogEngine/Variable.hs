@@ -1,6 +1,7 @@
 module FrogEngine.Variable
-  ( Variable (..),
+  ( Variable (name, distinct, stable, recent),
     newRelation,
+    newVariable,
     merge,
     insertIntoVariable,
     Relation (elements),
@@ -28,6 +29,9 @@ data Variable k v = Variable
     todo :: [Relation k v]
   }
   deriving (Eq, Show)
+
+newVariable :: String -> Bool -> Variable k v
+newVariable name distinct = Variable name distinct [] (R []) []
 
 insertIntoVariable :: Variable k v -> Relation k v -> Variable k v
 insertIntoVariable var rel = var {todo = rel : todo var}
