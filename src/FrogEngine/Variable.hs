@@ -35,3 +35,8 @@ newVariable name distinct = Variable name distinct [] (R []) []
 
 insertIntoVariable :: Variable k v -> Relation k v -> Variable k v
 insertIntoVariable var rel = var {todo = rel : todo var}
+
+allKnownFacts :: (Ord k, Ord v) => Variable k v -> Relation k v
+allKnownFacts (Variable _ _ stable recent todo) = rel
+  where
+    rel = foldr merge recent (stable ++ todo)
