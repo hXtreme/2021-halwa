@@ -5,38 +5,41 @@ module FrogEngine.Variable
     merge,
     insertIntoVariable,
     Relation (elements),
+    FactLiterals,
   )
 where
 
 import Data.Foldable (Foldable (toList))
 import Data.Sort (uniqueSort)
-import qualified FrogEngine.Lib as Lib
+import qualified Datalog.Constant as DL
+
+type FactLiterals = [DL.Constant]
 
 -- | A sorted and distinct collection of elements (tuples).
-newtype Relation k v = R {elements :: [(k, v)]} deriving (Eq, Show)
+newtype Relation = R {elements :: [FactLiterals]} deriving (Eq, Show)
 
-newRelation :: (Ord k, Ord v, Foldable t) => t (k, v) -> Relation k v
+newRelation :: (Foldable t) => t FactLiterals -> Relation
 newRelation = R . uniqueSort . toList
 
-merge :: (Ord k, Ord v) => Relation k v -> Relation k v -> Relation k v
+merge :: Relation -> Relation -> Relation
 merge (R xs) (R ys) = newRelation (xs ++ ys)
 
-data Variable k v = Variable
+data Variable = Variable
   { name :: String,
     distinct :: Bool,
-    stable :: [Relation k v],
-    recent :: Relation k v,
-    todo :: [Relation k v]
+    stable :: [Relation],
+    recent :: Relation,
+    todo :: [Relation]
   }
   deriving (Eq, Show)
 
-newVariable :: String -> Bool -> Variable k v
+newVariable :: String -> Bool -> Variable
 newVariable name distinct = Variable name distinct [] (R []) []
 
-insertIntoVariable :: Variable k v -> Relation k v -> Variable k v
+insertIntoVariable :: Variable -> Relation -> Variable
 insertIntoVariable var rel = var {todo = rel : todo var}
 
-allKnownFacts :: (Ord k, Ord v) => Variable k v -> Relation k v
+allKnownFacts :: Variable -> Relation
 allKnownFacts (Variable _ _ stable recent todo) = rel
   where
     rel = foldr merge recent (stable ++ todo)

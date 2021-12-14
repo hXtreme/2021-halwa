@@ -6,90 +6,102 @@ module FrogEngine.Join
 where
 
 import FrogEngine.Variable
-  ( Relation (elements),
+  ( FactLiterals,
+    Relation (elements),
     Variable (recent, stable),
     insertIntoVariable,
     newRelation,
   )
 
+type KeyFn v = FactLiterals -> v
+
 fromJoin ::
-  (Ord k, Ord v1, Ord v2, Ord v) =>
-  Variable k v ->
-  Variable k v1 ->
-  Variable k v2 ->
-  (k -> v1 -> v2 -> v) ->
-  Variable k v
+  Ord v =>
+  Variable ->
+  (FactLiterals -> FactLiterals -> FactLiterals) ->
+  KeyFn v ->
+  KeyFn v ->
+  Variable ->
+  Variable ->
+  Variable
 fromJoin = joinInto
 
-fromAntiJoin ::
-  (Ord k, Ord v) =>
-  Variable k v ->
-  Variable k v ->
-  Relation k v' ->
-  (k -> v -> v) ->
-  Variable k v
+fromAntiJoin :: 
+  Ord v =>
+  Variable ->
+  (FactLiterals -> FactLiterals) ->
+  KeyFn v ->
+  KeyFn v ->
+  Variable ->
+  Relation ->
+  Variable
 fromAntiJoin = antiJoinInto
 
 fromMap ::
-  (Ord k, Ord v, Ord v') =>
-  Variable k v ->
-  Variable k v' ->
-  (k -> v' -> v) ->
-  Variable k v
+  Variable ->
+  (FactLiterals -> FactLiterals) ->
+  Variable ->
+  Variable
 fromMap = mapInto
 
--- p(X, Y) = q(X, Y), r(X, Y).
--- Test: Monotonic steps.
+-- -- p(X, Y) = q(X, Y), r(X, Y).
+-- -- Test: Monotonic steps.
 joinInto ::
-  (Ord k, Ord v1, Ord v2, Ord v) =>
-  Variable k v -> -- p
-  Variable k v1 -> -- q
-  Variable k v2 -> -- r
-  (k -> v1 -> v2 -> v) ->
-  Variable k v -- p'
-joinInto target input1 input2 logic = insertIntoVariable target . newRelation $ results
+  Ord v =>
+  Variable -> -- p
+  (FactLiterals -> FactLiterals -> FactLiterals) ->
+  KeyFn v ->
+  KeyFn v ->
+  Variable -> -- q
+  Variable -> -- r
+  Variable -- p'
+joinInto target logic k1 k2 input1 input2 = insertIntoVariable target . newRelation $ results
   where
     recent1 = elements . recent $ input1
     recent2 = elements . recent $ input2
-    fromStable2 = foldMap (mergeSortJoin logic recent1 . elements) (stable input2)
-    fromStable1 = foldMap (mergeSortJoin' logic recent2 . elements) (stable input1)
-    fromRecent = mergeSortJoin logic recent1 recent2
+    fromStable2 = foldMap (mergeSortJoin logic k1 k2 recent1 . elements) (stable input2)
+    fromStable1 = foldMap (mergeSortJoin' logic k1 k2 recent2 . elements) (stable input1)
+    fromRecent = mergeSortJoin logic k1 k2 recent1 recent2
     results = fromStable2 <> fromStable1 <> fromRecent
 
 antiJoinInto ::
-  (Ord k, Ord v) =>
-  Variable k v ->
-  Variable k v1 ->
-  Relation k v2 ->
-  (k -> v1 -> v) ->
-  Variable k v
-antiJoinInto target input1 input2 logic = insertIntoVariable target . newRelation $ results
+  Ord v =>
+  Variable ->
+  (FactLiterals -> FactLiterals) ->
+  KeyFn v ->
+  KeyFn v ->
+  Variable ->
+  Relation ->
+  Variable
+antiJoinInto target logic k1 k2 input1 input2 = insertIntoVariable target . newRelation $ results
   where
     r [] _ = []
     r xs [] = xs
-    r (x@(kx, vx) : xs) (y@(ky, _) : ys)
-      | kx < ky = x : r xs (y : ys)
-      | kx == ky = r xs (y : ys)
-      | kx > ky = r (x : xs) ys
-    results = map (uncurry mapFn) $ r (elements . recent $ input1) (elements input2)
-    mapFn k v = (k, logic k v)
+    r (x : xs) (y : ys)
+      | k1 x < k2 y = x : r xs (y : ys)
+      | k1 x == k2 y = r xs (y : ys)
+      | k1 x > k2 y = r (x : xs) ys
+    results = map logic $ r (elements . recent $ input1) (elements input2)
 
 -- | Merge - Sort - Join (Try SortedList)
-mergeSortJoin :: (Ord k) => (k -> v1 -> v2 -> v) -> [(k, v1)] -> [(k, v2)] -> [(k, v)]
-mergeSortJoin logic = merge
+mergeSortJoin ::
+  (Ord v) =>
+  (FactLiterals -> FactLiterals -> FactLiterals) ->
+  KeyFn v ->
+  KeyFn v ->
+  [FactLiterals] ->
+  [FactLiterals] ->
+  [FactLiterals]
+mergeSortJoin logic k1 k2 = merge
   where
     merge [] ys = []
     merge xs [] = []
-    merge (x@(kx, vx) : xs) (y@(ky, vy) : ys)
-      | kx < ky = merge xs (y : ys)
-      | kx == ky = (kx, logic kx vx vy) : merge (x : xs) ys
-      | kx > ky = merge (x : xs) ys
+    merge (x : xs) (y : ys)
+      | k1 x < k2 y = merge xs (y : ys)
+      | k1 x == k2 y = logic x y : merge (x : xs) ys
+      | k1 x > k2 y = merge (x : xs) ys
 
-mergeSortJoin' :: Ord k => (k -> v1 -> v2 -> v) -> [(k, v2)] -> [(k, v1)] -> [(k, v)]
-mergeSortJoin' logic input1 input2 = mergeSortJoin logic input2 input1
+mergeSortJoin' logic k1 k2 input1 input2 = mergeSortJoin logic k2 k1 input2 input1
 
-mapInto :: (Ord k, Ord v) => Variable k v -> Variable k t -> (k -> t -> v) -> Variable k v
-mapInto target input logic = insertIntoVariable target . newRelation $ results
-  where
-    results = map (uncurry mapFn) $ elements . recent $ input
-    mapFn k v = (k, logic k v)
+mapInto :: Variable -> (FactLiterals -> FactLiterals) -> Variable -> Variable
+mapInto target logic = insertIntoVariable target . newRelation . map logic . elements . recent
