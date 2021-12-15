@@ -2,6 +2,7 @@ module FrogEngine.Join
   ( fromJoin,
     fromAntiJoin,
     fromMap,
+    mergeSortJoin,
   )
 where
 
@@ -12,6 +13,7 @@ import FrogEngine.Variable
     insertIntoVariable,
     newRelation,
   )
+import Data.Sort (sortOn)
 
 type KeyFn v = FactLiterals -> v
 
@@ -26,7 +28,7 @@ fromJoin ::
   Variable
 fromJoin = joinInto
 
-fromAntiJoin :: 
+fromAntiJoin ::
   Ord v =>
   Variable ->
   (FactLiterals -> FactLiterals) ->
@@ -59,8 +61,10 @@ joinInto target logic k1 k2 input1 input2 = insertIntoVariable target . newRelat
   where
     recent1 = elements . recent $ input1
     recent2 = elements . recent $ input2
-    fromStable2 = foldMap (mergeSortJoin logic k1 k2 recent1 . elements) (stable input2)
-    fromStable1 = foldMap (mergeSortJoin' logic k1 k2 recent2 . elements) (stable input1)
+    stable1 = elements . stable $ input1
+    stable2 = elements . stable $ input2
+    fromStable2 = mergeSortJoin logic k1 k2 recent1 stable2
+    fromStable1 = mergeSortJoin logic k1 k2 stable1 recent2
     fromRecent = mergeSortJoin logic k1 k2 recent1 recent2
     results = fromStable2 <> fromStable1 <> fromRecent
 
@@ -92,16 +96,16 @@ mergeSortJoin ::
   [FactLiterals] ->
   [FactLiterals] ->
   [FactLiterals]
-mergeSortJoin logic k1 k2 = merge
+mergeSortJoin logic k1 k2 input1 input2 = merge input1' input2'
   where
+    input1' = sortOn k1 input1
+    input2' = sortOn k2 input2
     merge [] ys = []
     merge xs [] = []
     merge (x : xs) (y : ys)
       | k1 x < k2 y = merge xs (y : ys)
       | k1 x == k2 y = logic x y : merge (x : xs) ys
       | k1 x > k2 y = merge (x : xs) ys
-
-mergeSortJoin' logic k1 k2 input1 input2 = mergeSortJoin logic k2 k1 input2 input1
 
 mapInto :: Variable -> (FactLiterals -> FactLiterals) -> Variable -> Variable
 mapInto target logic = insertIntoVariable target . newRelation . map logic . elements . recent
