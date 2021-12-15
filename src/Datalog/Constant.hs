@@ -23,6 +23,6 @@ instance Parseable Constant where
       quotedString = P.between dQuote (many notDQuote) dQuote
 
 instance Pretty Constant where
-  pretty (Symbol s) = s
+  pretty (Symbol s) = "\"" ++ s ++ "\""
   pretty (Boolean b) = show b
   pretty (Integer i) = show i
