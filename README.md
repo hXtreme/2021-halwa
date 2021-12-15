@@ -32,6 +32,25 @@ query path.
 // path("Towne", "Moore").
 ```
 
+## How to run?
+
+To run a demo program you can run
+
+```sh
+stack run demo <demo-prog> <prog-args>
+```
+
+For example:
+```sh
+stack run demo evens 5
+```
+
+To run an external file
+
+```sh
+stack run <file-path>
+```
+
 ## Module organization
 
 Haskell packages typically divide their source code into three separate places:
