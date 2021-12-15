@@ -6,6 +6,7 @@ module FrogEngine.Variable
     insertIntoVariable,
     stepVariable,
     allKnownFacts,
+    emptyRelation,
     Relation (elements),
     FactLiterals,
   )

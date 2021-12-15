@@ -7,6 +7,9 @@ import Data.Map (Map, (!))
 
 type Memory = Map String Variable
 
+newMemory :: [Variable] -> Memory
+newMemory = Map.fromList . map (\v -> (name v, v))
+
 -- | Are two memories equal?
 memEq :: (Ord a, Ord k) => Map k a -> Map k a -> Bool
 memEq mem1 mem2 = keysMatch && and valuesMatch
