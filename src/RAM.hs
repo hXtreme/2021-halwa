@@ -1,7 +1,7 @@
 module RAM where
 
-import qualified RAM.Program as R
+import qualified FrogEngine.RAM as R
 import qualified Datalog.Program as D
 
-astToRAM :: D.Program -> R.Program
+astToRAM :: D.Program -> R.RAM
 astToRAM = undefined
