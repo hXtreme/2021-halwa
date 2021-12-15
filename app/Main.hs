@@ -31,7 +31,7 @@ main = do
 
 runEvensDemo :: String -> IO ()
 runEvensDemo num = do
-  putStr $ Engine.prettyResults execResult
+  putStrLn $ Engine.prettyResults execResult
   where
     base = read num :: Int
     program = Demo.Even.evens base

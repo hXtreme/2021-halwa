@@ -14,14 +14,21 @@ import qualified FrogEngine.RAM as RAM
 import FrogEngine.Lib (prettyResults)
 import Pretty (NewLineSeparatedList(NSL), Pretty (pretty))
 
+{-
+odd(O) :- succ(E, O), even(E).
+even(E) :- succ(O, E), odd(O).
+
+query even.
+query odd.
+-}
+
+
 evens :: Int -> RAM
 evens base = RAM mem rules queries
   where
     nums = [DL.Constant.Integer n | n <- [0 .. base - 1]]
     rules = [ruleOdd, ruleEven]
-    -- | odd(O) :- succ(E, O), even(E).
     ruleOdd = Join "odd" [1] "succ" [0] "even" [0]
-    -- | even(E) :- succ(O, E), odd(O).
     ruleEven = Join "even" [1] "succ" [0] "odd" [0]
     queries = ["even", "odd"]
     mem = Map.fromList . map (\v -> (name v, v)) $ vars
