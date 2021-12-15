@@ -12,8 +12,6 @@ succ(3, 4). succ(4, 5).
 
 even(0).
 
-odd(O) :- succ(E, O), even(E).
 even(E) :- succ(O, E), succ(E1, O), even(E1).
 
 query even.
-query odd.
