@@ -1,0 +1,17 @@
+// Even and Odd numbers in Z mod 6
+
+decl num(Int).
+decl succ(Int, Int).
+decl even(Int).
+
+num(0). num(1). num(2).
+num(3). num(4). num(5).
+
+succ(0, 1). succ(1, 2). succ(2, 3).
+succ(3, 4). succ(4, 5).
+
+even(0).
+
+even(E) :- succ(O, E), succ(E1, O), even(E1).
+
+query even.

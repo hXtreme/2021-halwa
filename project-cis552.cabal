@@ -25,8 +25,35 @@ source-repository head
 
 library
   exposed-modules:
+      Common
+      Datalog.Argument
+      Datalog.Atom
+      Datalog.Common
+      Datalog.Constant
+      Datalog.Constraint
+      Datalog.Declaration
+      Datalog.Disjunction
+      Datalog.Fact
+      Datalog.Literal
+      Datalog.Program
+      Datalog.Query
+      Datalog.Rule
+      Datalog.Variable
+      FrogEngine.Join
+      FrogEngine.Variable
       Lib
+      Located
+      Parseable
       Parser
+      Pretty
+      RAM
+      RAM.Constant
+      RAM.Disjunction
+      RAM.Fact
+      RAM.Flow
+      RAM.Program
+      RAM.Update
+      RAM.Variable
   other-modules:
       Paths_project_cis552
   hs-source-dirs:
@@ -54,11 +81,13 @@ library
     , base >=4.14
     , containers >=0.6.2.1
     , mtl
+    , sort
   default-language: Haskell2010
 
 executable project-cis552-exe
   main-is: Main.hs
   other-modules:
+      TestSuite
       Paths_project_cis552
   hs-source-dirs:
       app
@@ -87,12 +116,23 @@ executable project-cis552-exe
     , containers >=0.6.2.1
     , mtl
     , project-cis552
+    , sort
   default-language: Haskell2010
 
 test-suite project-cis552-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Datalog.AtomTest
+      Datalog.ConstraintTest
+      Datalog.DeclarationTest
+      Datalog.FactTest
+      Datalog.LiteralTest
+      Datalog.PrettyPrinterTest
+      Datalog.ProgramTest
+      Datalog.QueryTest
+      Datalog.RuleTest
+      TestCommon
       Paths_project_cis552
   hs-source-dirs:
       test
@@ -121,4 +161,5 @@ test-suite project-cis552-test
     , containers >=0.6.2.1
     , mtl
     , project-cis552
+    , sort
   default-language: Haskell2010
