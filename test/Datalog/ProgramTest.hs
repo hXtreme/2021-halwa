@@ -39,25 +39,7 @@ tProgramParserTest1 =
               []
               []
           )
-      )
-
-tProgramTest1 :: Test
-tProgramTest1 =
-  "ProgramParserTest1" ~: parse (parser :: Parser DL.Program) "p(X, Y) :- q(X, Y), r(X)."
-    ~?= Right
-      ( L
-          loc1
-          ( DL.Program
-              []
-              [ Datalog.Rule.Rule
-                  (atomP argsXY)
-                  [lit (atomQ argsXY), lit (atomR [argX])]
-              ]
-              []
-              []
-              []
-          )
-      )      
+      )    
 
 tProgramParserTests :: Test
 tProgramParserTests =
@@ -105,10 +87,6 @@ pathTest rawAst =
       parsedItem (Left e) = Left e
       parsedItem (Right (L _ it)) = Right it
       ast = parsedItem (P.parse parser rawAst)
-    -- ast <- loadFile "example/path.dl"
-    -- putStrLn "Loaded path program and created its AST. Now comparing it to expected AST."
-    --     -- in putStrLn $ show (DL.facts program1)
-    -- putStrLn $ show (pathProgram == ast)
 
 evenProgram :: DL.Program
 evenProgram = DL.Program {DL.declarations=[d1, d2, d3], DL.rules=[rule2], DL.facts=[fact1, fact2, fact3, fact4, fact5, fact6, fact7, fact8, fact9, fact10, fact11, fact12, fact13], DL.disjunction=[], DL.queries=[query1]}        
@@ -124,12 +102,10 @@ evenProgram = DL.Program {DL.declarations=[d1, d2, d3], DL.rules=[rule2], DL.fac
         a5 = Atom {Datalog.Atom.predicate="succ", args=[Datalog.Argument.Variable var1, Datalog.Argument.Variable var2]}
         a6 = Atom {Datalog.Atom.predicate="even", args=[Datalog.Argument.Variable var7]}
         a18 = Atom {Datalog.Atom.predicate="succ", args=[Datalog.Argument.Variable var2, Datalog.Argument.Variable var7]}
-        -- lit1 = Datalog.Literal.Pos a1
         lit2 = Datalog.Literal.Pos a4
         lit3 = Datalog.Literal.Pos a5
         lit4 = Datalog.Literal.Pos a6
         lit5 = Datalog.Literal.Pos a18
-        -- rule1 = Rule {Datalog.Rule.head=a1, body=[]}
         rule2 = Rule {Datalog.Rule.head=a4, body=[lit3, lit5, lit4]}
         const3 = Datalog.Constant.Integer 0
         const4 = Datalog.Constant.Integer 1
@@ -174,14 +150,14 @@ evenTest rawAst =
       parsedItem (Right (L _ it)) = Right it
       ast = parsedItem (P.parse parser rawAst)
 
-evenTestDebugger :: IO ()
-evenTestDebugger = 
+programTestDebugger :: IO ()
+programTestDebugger = 
   do
     ast <- loadFile "example/even.dl"
     putStrLn "Loaded path program and created its AST. Now comparing it to expected AST."
-    -- putStrLn $ show (DL.rules evenProgram == DL.rules ast)
+    putStrLn $ show (DL.rules evenProgram == DL.rules ast)
     putStrLn $ show (DL.rules ast)
-        -- in putStrLn $ show (program1 == ast)  
+    putStrLn $ show (evenProgram == ast)  
 
 tParserTestsFromFile :: String -> String -> Test
 tParserTestsFromFile s1 s2 =
