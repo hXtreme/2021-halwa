@@ -89,7 +89,7 @@ pathTest rawAst =
       ast = parsedItem (P.parse parser rawAst)
 
 evenProgram :: DL.Program
-evenProgram = DL.Program {DL.declarations=[d1, d2, d3], DL.rules=[rule2], DL.facts=[fact1, fact2, fact3, fact4, fact5, fact6, fact7, fact8, fact9, fact10, fact11, fact12, fact13], DL.disjunction=[], DL.queries=[query1]}        
+evenProgram = DL.Program {DL.declarations=[d1, d2, d3], DL.rules=[rule2], DL.facts=[fact1, fact2, fact3, fact4, fact5, fact6, fact7, fact8, fact9, fact10, fact11, fact13], DL.disjunction=[], DL.queries=[query1]}        
       where
         d1 = Declaration {Datalog.Declaration.predicate="num", Datalog.Declaration.argTypes=[Common.Integer]}
         d2 = Declaration {Datalog.Declaration.predicate="succ", Datalog.Declaration.argTypes=[Common.Integer, Common.Integer]}
@@ -99,9 +99,9 @@ evenProgram = DL.Program {DL.declarations=[d1, d2, d3], DL.rules=[rule2], DL.fac
         var7 = Datalog.Variable.Variable {name="E1"}
         a1 = Atom {Datalog.Atom.predicate="even", args=[Datalog.Argument.Variable var2]}
         a4 = Atom {Datalog.Atom.predicate="even", args=[Datalog.Argument.Variable var1]}
-        a5 = Atom {Datalog.Atom.predicate="succ", args=[Datalog.Argument.Variable var1, Datalog.Argument.Variable var2]}
+        a5 = Atom {Datalog.Atom.predicate="succ", args=[Datalog.Argument.Variable var2, Datalog.Argument.Variable var1]}
         a6 = Atom {Datalog.Atom.predicate="even", args=[Datalog.Argument.Variable var7]}
-        a18 = Atom {Datalog.Atom.predicate="succ", args=[Datalog.Argument.Variable var2, Datalog.Argument.Variable var7]}
+        a18 = Atom {Datalog.Atom.predicate="succ", args=[Datalog.Argument.Variable var7, Datalog.Argument.Variable var2]}
         lit2 = Datalog.Literal.Pos a4
         lit3 = Datalog.Literal.Pos a5
         lit4 = Datalog.Literal.Pos a6
@@ -136,8 +136,7 @@ evenProgram = DL.Program {DL.declarations=[d1, d2, d3], DL.rules=[rule2], DL.fac
         fact8 = Fact {Datalog.Fact.head=a13}
         fact9 = Fact {Datalog.Fact.head=a14}
         fact10 = Fact {Datalog.Fact.head=a15}
-        fact11 = Fact {Datalog.Fact.head=a16}
-        fact12 = Fact {Datalog.Fact.head=a17}         
+        fact11 = Fact {Datalog.Fact.head=a16}        
         fact13 = Fact {Datalog.Fact.head=a19}   
         a7 = Atom {Datalog.Atom.predicate="even", args=[]}
         query1 = Query {Datalog.Query.query=a7}    
@@ -156,7 +155,7 @@ programTestDebugger =
     ast <- loadFile "example/even.dl.old"
     putStrLn "Loaded path program and created its AST. Now comparing it to expected AST."
     putStrLn $ show (DL.rules evenProgram == DL.rules ast)
-    putStrLn $ show (DL.rules ast)
+    putStrLn $ pretty (evenProgram)
     putStrLn $ show (evenProgram == ast)  
 
 tParserTestsFromFile :: String -> String -> Test
