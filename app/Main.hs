@@ -4,6 +4,7 @@ import qualified Datalog.Program as DL
 import qualified Even as Demo.Even
 import qualified FrogEngine.Lib as Engine
 import qualified Nums as Demo.Nums
+import qualified Path as Demo.Path
 import Parseable (parseFromFile)
 import Pretty (pretty)
 import System.Environment (getArgs)
@@ -27,6 +28,7 @@ main = do
   args <- getArgs
   case args of
     [fileName] -> cli fileName
+    ["demo", "path"] -> runPathDemo
     ["demo", "evens", num] -> runEvensDemo num
     ["demo", "nums", num] -> runNumsDemo num
     _ -> putStrLn "Usage: stack run <datalog-file>"
@@ -45,4 +47,11 @@ runNumsDemo num = do
   where
     base = read num :: Int
     program = Demo.Nums.nums' base
+    execResult = Engine.exec program
+
+runPathDemo :: IO ()
+runPathDemo = do
+  putStrLn $ Engine.prettyResults execResult
+  where
+    program = Demo.Path.paths
     execResult = Engine.exec program
