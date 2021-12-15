@@ -9,7 +9,7 @@ where
 
 import Data.Foldable (Foldable (toList))
 import Data.Sort (uniqueSort)
-import qualified FrogEngine.Lib as Lib
+-- import qualified FrogEngine.Lib as Lib
 
 -- | A sorted and distinct collection of elements (tuples).
 newtype Relation k v = R {elements :: [(k, v)]} deriving (Eq, Show)
