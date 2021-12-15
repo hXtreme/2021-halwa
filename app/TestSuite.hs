@@ -82,7 +82,7 @@ prettyTestPath =
 evenTest :: IO ()
 evenTest = 
   do
-    ast <- loadFile "example/path.dl"
+    ast <- loadFile "example/even.dl"
     putStrLn "Loaded path program and created its AST. Now comparing it to expected AST."
     let d1 = Declaration {Datalog.Declaration.predicate="num", Datalog.Declaration.argTypes=[Common.Integer]}
         d2 = Declaration {Datalog.Declaration.predicate="succ", Datalog.Declaration.argTypes=[Common.Integer, Common.Integer]}
