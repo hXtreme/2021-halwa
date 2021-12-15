@@ -153,7 +153,7 @@ evenTest rawAst =
 programTestDebugger :: IO ()
 programTestDebugger = 
   do
-    ast <- loadFile "example/even-v1.dl"
+    ast <- loadFile "example/even.dl.old"
     putStrLn "Loaded path program and created its AST. Now comparing it to expected AST."
     putStrLn $ show (DL.rules evenProgram == DL.rules ast)
     putStrLn $ show (DL.rules ast)
@@ -167,7 +167,7 @@ tParserTestsFromFile s1 s2 =
 test_all :: IO Counts
 test_all = do
   rawAstPath <- IO.readFile "example/path.dl"
-  rawAstEven <- IO.readFile "example/even-v1.dl"
+  rawAstEven <- IO.readFile "example/even.dl.old"
   runTestTT $
     TestList
       [ tProgramParserTests,
