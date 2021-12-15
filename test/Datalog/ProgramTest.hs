@@ -167,11 +167,7 @@ tParserTestsFromFile s1 s2 =
 test_all :: IO Counts
 test_all = do
   rawAstPath <- IO.readFile "example/path.dl"
-<<<<<<< HEAD
   rawAstEven <- IO.readFile "example/even-v1.dl"
-=======
-  rawAstEven <- IO.readFile "example/even.dl"
->>>>>>> 2d3f1c6439ed1d599329f9a33735a3e9df421d09
   runTestTT $
     TestList
       [ tProgramParserTests,
