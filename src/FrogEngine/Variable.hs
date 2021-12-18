@@ -7,6 +7,7 @@ module FrogEngine.Variable
     stepVariable,
     allKnownFacts,
     emptyRelation,
+    emptyVariable,
     Relation (elements),
     FactLiterals,
   )
@@ -69,6 +70,10 @@ instance Ord Variable where
 -- | New variable.
 newVariable :: String -> Relation -> Variable
 newVariable name rel = Variable name True emptyRelation rel []
+
+-- | Empty variable.
+emptyVariable :: String -> Variable
+emptyVariable name = Variable name False emptyRelation emptyRelation []
 
 -- | Insert a facts into a variable.
 insertIntoVariable :: Variable -> Relation -> Variable
